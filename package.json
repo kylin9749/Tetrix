@@ -1,0 +1,11 @@
+{
+  "name": "tetrix",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc --build tsconfig.json"
+  },
+  "author": "",
+  "license": "ISC"
+}
