@@ -54,13 +54,15 @@ class game{
         // cell1.drawSelf();
     }
     public update():void{
+        
         let that = this;
-        let currentTime = this.startTime;
-        function tick(){
-            currentTime += 10;
-            if((currentTime  - that.startTime)  >that.gameSpeed){
-                that.startTime = currentTime;
-                
+        function tick(time:number){
+            if(that.startTime > time){
+                that.startTime = time;
+                return;
+            }
+            if((time  - that.startTime)  > that.gameSpeed){
+                that.startTime = time;
                 if(game.isGameOver){
                     context.save();
                     context.fillStyle = "blacK";
@@ -158,10 +160,13 @@ class game{
                     that.currentBlock.move(1,0);
                 }
             }
-            else if(e && e.keyCode == 40){
+            else if(e && e.keyCode == 40){ //下
                 if(that.isCanDown()){
                     that.currentBlock.move(0,1);
                 }
+            }
+            else if(e && e.keyCode == 38){
+                that.currentBlock.rotate();
             }
         };
     }
@@ -255,9 +260,90 @@ class block{
      *顺时针旋转
      */
     public rotate():void {
-        switch(this.type){
-            case SHAPE.YI:
+        let matrix:number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+        let matrixTemp:number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+        let minX:number = 999;
+        let minY:number = 999;
+        if(this.position.length == 4){
+            for(let i = 0;i<this.position.length;i++){
+                if(this.position[i].x <= minX){
+                    minX = this.position[i].x ;
+                }
+                if(this.position[i].y <= minY){
+                    minY = this.position[i].y;
+                }
+            }
 
+            for(let j=0;j<this.position.length;j++){
+                matrix[this.position[j].y - minY][this.position[j].x - minX] = 1;
+            }
+        }
+        switch(this.type){
+            case SHAPE.TIAN:
+                break;
+            case SHAPE.YI:
+                let dst:number = 3;
+                for(let i=0;i<4;i++,dst--){
+                    for(let j=0;j<4;j++){
+                        matrixTemp[j][dst] = matrix[i][j];
+                    }
+                }
+                let k0:number = 0;
+                let canChange0 = true;
+                for(let i=0;i<4;i++){
+                    for(let j=0;j<4;j++){
+                        if(matrixTemp[i][j] == 1){
+                            if(j+minX < 0 || j+minX > BOARD_WIDTH-1 
+                                || i+minY <0 || i+minY > BOARD_HEIGHT -1 
+                                || board.state[j+minX][i+minY] ){
+                                canChange0 = false;
+                            }
+                        }
+                    }
+                }
+                if(canChange0){
+                    for(let i=0;i<4;i++){
+                        for(let j=0;j<4;j++){
+                            if(matrixTemp[i][j] == 1){
+                                this.position[k0].x = j+minX;
+                                this.position[k0].y = i+minY;
+                                k0++;
+                            }
+                        }
+                    }                   
+                }
+                break;
+            default:
+                let dst1:number = 2;
+                for(let i=0;i<3;i++,dst1--){
+                    for(let j=0;j<3;j++){
+                        matrixTemp[j][dst1] = matrix[i][j];
+                    }
+                }
+                let k1:number = 0;
+                let canChange = true;
+                for(let i=0;i<3;i++){
+                    for(let j=0;j<3;j++){
+                        if(matrixTemp[i][j] == 1){
+                            if(j+minX < 0 || j+minX > BOARD_WIDTH-1 
+                                || i+minY <0 || i+minY > BOARD_HEIGHT -1 
+                                || board.state[j+minX][i+minY] ){
+                                canChange = false;
+                            }
+                        }
+                    }
+                }
+                if(canChange){
+                    for(let i=0;i<3;i++){
+                        for(let j=0;j<3;j++){
+                            if(matrixTemp[i][j] == 1){
+                                this.position[k1].x = j+minX;
+                                this.position[k1].y = i+minY;
+                                k1++;
+                            }
+                        }
+                    }                   
+                }
                 break;
         }
     }
@@ -356,5 +442,5 @@ class cell{
 }
 
 
-let myGame = new game(100);
+let myGame = new game(1000);
 myGame.start();
