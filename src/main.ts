@@ -46,7 +46,7 @@ class game{
     public start():void{
         this.init();
         this.update();
-     
+        this.addEventListener();
     }
 
     public init():void{
@@ -77,6 +77,7 @@ class game{
                     that.currentBlock.move(0,1);
                     that.currentBlock.drawSelf();
                 }else{
+                    that.checkGetScoreAndCleanRow();
                     that.board.claerMap();
                     that.currentBlock.finishMoveAndDrawToMap();
                     that.board.drawMap();
@@ -102,17 +103,67 @@ class game{
     }
 
     /**
+     * isCanLeft
+     * 能否往左走
+     */
+    public isCanLeft() {
+        return this.currentBlock.isCanLfet();
+    }
+
+
+    /**
+     * isCanRight
+     */
+    public isCanRight() {
+        return this.currentBlock.isCanRight();
+        
+    }
+
+    /**
      * isGetScore
      * 判断是否得分并清楚某一行
      */
-    public checkGetScoreAndCleanRow() {
-        for(let i = 0;i<BOARD_HEIGHT;i++){
-            
+    public checkGetScoreAndCleanRow():void {
+        let i = 0;
+        let j = 0;
+        for(;i<BOARD_HEIGHT;i++){
+            let isGetScore = true;
+            for(;j<BOARD_WIDTH;j++){
+                if(!board.state[j][i]){
+                    isGetScore = false;
+                    break;
+                }
+            }
+            if(isGetScore){
+                for(let k =0;k<BOARD_WIDTH;k++){
+                    board.state[k].splice(i,1);
+                    board.state[k].unshift(false);
+                }
+                this.score++;
+            }
         }
     }
 
-    public setListener():void{
-
+    public addEventListener():void{
+        let that = this;
+        document.onkeydown = function(event){
+            var e = event || window.event;
+            if(e && e.keyCode == 37 ){ //左
+                if(that.isCanLeft()){
+                    that.currentBlock.move(-1,0);
+                }
+            }
+            else if(e && e.keyCode == 39){ //右
+                if(that.isCanRight()){
+                    that.currentBlock.move(1,0);
+                }
+            }
+            else if(e && e.keyCode == 40){
+                if(that.isCanDown()){
+                    that.currentBlock.move(0,1);
+                }
+            }
+        };
     }
 }
 
