@@ -77,9 +77,9 @@ class game{
                     that.currentBlock.move(0,1);
                     that.currentBlock.drawSelf();
                 }else{
-                    that.checkGetScoreAndCleanRow();
                     that.board.claerMap();
                     that.currentBlock.finishMoveAndDrawToMap();
+                    that.checkGetScoreAndCleanRow();
                     that.board.drawMap();
                     that.currentBlock = that.nextBlock;
                     that.nextBlock = new block(Math.floor(Math.random() * SHAPE_ARR.length));
