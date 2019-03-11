@@ -218,7 +218,7 @@ class board{
 }
 
 
-
+//方块
 class block{
     public position:cell[] = [];
     public type:SHAPE;
